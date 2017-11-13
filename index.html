@@ -1,1 +1,164 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <!--<meta charset="UTF-8"> -->
+    <title>Homepage</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  	<link href="bootstrap_3/css/bootstrap.min.css" rel="stylesheet">
+	  	<link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+		<style type="text/css">
+		body{
+			padding-left:-40px;
+			padding-right:-40px;
+			padding-top:-100px;
+
+		}
+		.jumbotron {
+		    position: relative;
+		    background: #000 url("Files/deal.jpg");
+		    width: 100%;
+		    height: 100%;
+			color: #ddd;
+			font-size: 20px;
+		    background-size: cover;
+		    overflow: hidden;
+		}
+		.jumbotron h3{
+		    color: #fff !important
+		}	
+		</style>
+  </head>
+	<!-- ********** #000 url("http://www.thebarefootnomad.com/wp-content/uploads/2013/10/Sunset-in-Sozopol-Bulgaria-by-Ivailo-Djilianov-on-Flickr1.jpg") center center; ************ -->	
+		
+	
+<!-- ********************** Navbar ******************* -->
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	  <div class = "container">
+	    <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+	      <span class="sr-only">Toggle navigation</span>
+	      <span class="icon-bar"></span>
+	      <span class="icon-bar"></span>
+	      <span class="icon-bar"></span>
+	    </button>
+	    <a class="navbar-brand" href="#about"><i class="fa fa-home fa-lg"></i></a></span> </a>
+
+	  <!-- Collect the nav links, forms, and other content for toggling -->
+	  <div class="navbar-collapse collapse navHeaderCollapse">
+	    <ul class="nav navbar-nav">
+		  <li class = ""><a href="#papers"><i class="fa fa-file-o fa-fw"></i> Papers</a></li>
+		  <li class = ""><a href="#lectures"><i class="fa fa-pencil-square-o fa-fw"></i> Lectures</a></li>
+		  <!--<li class = ""><a href="Files/Resume.pdf"><i class="fa fa-file-text-o fa-lg"></i> Resume</a></li>-->
+		  <li class = ""><a href="https://github.com/davidbrandfonbrener"><i class="fa fa-github-square fa-lg"></i></a></li>
+  		 
+	  </div> 
+	  </div><!-- /.navbar-collapse -->
+	</div>
+
+<!-- *************** Body ***************** --> 
+<div class="jumbotron">
+	
+  	<div class="container">
+		<br><br><br><br><br>
+		<h1><center> David Brandfonbrener </center></h1>
+		<h3><center> 
+			<a> david.brandfonbrener@yale.edu </a></center></h3>
+		<br>
+	</div>
+</div>
+
+<!-- *************** About Me ***************** --> 
+<div class ="container">   
+	<a name = "about"></a>
+	<div class="clearfix"></div>
+	<br><br>  
+	<hr class="featurette-divider">
+	<div  class="media">
+		<div  class="pull-left media-top">
+			<br>  <br> <br>   
+			<img class="img-rounded"  src="Files/Profile.jpg" alt="..."  width="170", height="auto"></img>
+		</div> 
+		<h2> About Me </h2> 
+	<div class="media-body">
+<!-- <h3 class="media-heading">What I do:</h3> -->
+	<p> I'm a senior at Yale, completing B.A. degrees in math and computer science and looking to pursue graduate study in computer science. 
+	
+	My research interest 
+	</p>
+	
+	<p> During the school year, I also perform research in computational neuroscience at the <a href="http://murraylab.yale.edu" target="_blank">Murray Lab</a>, under <a href="http://murraylab.yale.edu/john_murray.profile?source=news" target="_blank">Dr. John Murray</a> at the Yale School of Medicine, Psychiatry N3 Division. My work is on studying the dynamics that allow <a href="https://en.wikipedia.org/wiki/Recurrent_neural_network" target="_blank"> recurrent neural networks </a> (RNNs) to form working memory for cognitive task function. The idea is that by understanding these dynamics for artificial RNNs, we can gain insight to the mechanisms behind emergent working memory in the prefrontal cortex. In particular, we can study how disorders such as schizophrenia arise as defects in these mechanisms. 
+	</p>
+	
+	<p> This website serves as a repository for some of my academic work, research, and personal projects. Go ahead and find something you like. A lot of the site is still in the process of being built.  
+	</p>
+	</div>
+	</div>
+			
+	<!-- *************** Papers ***************** --> 
+	<a name = "papers"></a>
+	<div class="clearfix"></div>
+	<br><br>
+    <hr class="featurette-divider">
+	<h2> Academic Papers and Publications</h2>
+	
+	<!--
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Sparse Grid Discretizations based on a Discontinuous Galerkin Method
+</h4> 
+	 A paper written in collaboration with <a href="https://www.perimeterinstitute.ca/people/erik-schnetter" target="_blank">Dr. Erik Schnetter</a> at the <a href="https://www.perimeterinstitute.ca/" target="_blank"> Perimeter Institute</a> for Theoretical Physics, on using the <a href="https://en.wikipedia.org/wiki/Discontinuous_Galerkin_method" target="_blank">discontinuous Galerkin</a> method together with <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.92.9392&rep=rep1&type=pdf" target="_blank">sparse grids</a> to evolve scalar wave equations in higher dimensional spacetimes. We developed a julia package, <a href="https://github.com/ABAtanasov/GalerkinSparseGrids.jl" target="_blank">GalerkinSparseGrids.jl</a> for the implementation of this theory, and present its results for 5+1 and 6+1-dimensional wave evolutions in the paper. This yields a significant computational step forward in the capacity to solve hyperbolic partial differential equations in higher dimensional space, and we hope to extend this work to Einstein's equations in an anisotropic spacetime.
+
+	 <p> <strong>(Fall 2017) Submitted to Journal of Classical and Quantum Gravity</strong> <a href="https://arxiv.org/abs/1710.09356">[arXiv]</a> <a href="Files/DG_sparse_grids.pdf">[PDF]</a> </p>
+		</div>
+	</div>
+	-->
+
+
+	
+
+
+
+	
+
+					
+	<!-- *************** Lessons ***************** --> 
+	<a name = "lectures"></a>
+	<div class="clearfix"></div>
+	<br><br>
+    <hr class="featurette-divider">
+	<h2> Lectures and Lecture Notes </h2>
+
+	<!--
+	<div class="media">
+			  <div class="pull-left media-top">
+			  <img class="img-rounded" src="Files/3pt.png" alt="..." height="100" width="150"></img>   
+			  </div>
+			  <div class="media-body">
+			    <h4 class="media-heading"> 3D Conformal Field Theory and the Ising Model</h4> 
+				A set of lectures given both as a final presentation for my research in CFT over the spring of 2017, as well as a related talk given in the Fall as part of the Yale graduate seminar in representation theory, as an attempt to introduce the ideas of higher-dimensional CFT to a more mathematical audience with some background in the ideas of the Virasoro algebra for the 2D case.
+			    <p> <strong>(Spring, Fall 2017)</strong> <a href="Files/472 CFT.pdf">[Spring Talk]</a> <a href="Files/CFT for Rep Theory Seminar.pdf">[Fall Talk]</a></p>
+			  </div>
+	</div>
+	-->
+	
+	
+			
+			
+		
+
+			
+					
+	</div>
+	<br>
+	
+	<!-- ***************** Footer ********************** -->
+	<hr class="featurette-divider">
+	<footer>
+		<p class="text-center"> Updated Nov 12, 2017 </p>
+	</footer>
+</div>
+</body>
+</html>
