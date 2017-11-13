@@ -82,13 +82,16 @@
 <!-- <h3 class="media-heading">What I do:</h3> -->
 	<p> I'm a senior at Yale, completing degrees in math and computer science and looking to pursue graduate study in computer science. 
 	
-	My research interest 
+	My current research interests are in the mathematical foundations of neural networks, but I have also done work in algebraic graph theory, computational neuroscience, and various other branches of math and computer science. 
+	</p>
+
+	<p> I am currently working on my senior papers for both of my majors. For computer science, I am studying neural nets with professor Andrew Barron from the statistics and data science department. For math I am working on Conway's 99 problem using techniques from algebraic graph theory with professor Pat Devlin. 
 	</p>
 	
-	<p> During the school year, I also perform research in computational neuroscience at the <a href="http://murraylab.yale.edu" target="_blank">Murray Lab</a>, under <a href="http://murraylab.yale.edu/john_murray.profile?source=news" target="_blank">Dr. John Murray</a> at the Yale School of Medicine, Psychiatry N3 Division. My work is on studying the dynamics that allow <a href="https://en.wikipedia.org/wiki/Recurrent_neural_network" target="_blank"> recurrent neural networks </a> (RNNs) to form working memory for cognitive task function. The idea is that by understanding these dynamics for artificial RNNs, we can gain insight to the mechanisms behind emergent working memory in the prefrontal cortex. In particular, we can study how disorders such as schizophrenia arise as defects in these mechanisms. 
+	<p> I also do research in computational neuroscience at the Murray Lab, under Dr. John Murray at the Yale School of Medicine, Psychiatry N3 Division. I study the dynamics that allow recurrent neural networks (RNNs) with ReLU activation functions to form working memory for cognitive task function. Hopefully by understanding these dynamics for artificial RNNs, we can gain insight to the mechanisms behind emergent working memory in the prefrontal cortex, but there is also just some interesting math. 
 	</p>
 	
-	<p> This website serves as a repository for some of my academic work, research, and personal projects. Go ahead and find something you like. A lot of the site is still in the process of being built.  
+	<p> This website is a repository for some of my academic work, research, and personal projects. A lot of the site is still in the process of being built.  
 	</p>
 	</div>
 	</div>
@@ -100,21 +103,78 @@
     <hr class="featurette-divider">
 	<h2> Academic Papers and Publications</h2>
 	
-	<!--
+
 	<div class="media">
 	  <div class="pull-left media-top">
 	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
 	 </div>
 	 <p>
 	 <div class="media-body">
-	 <h4 class="media-heading">Sparse Grid Discretizations based on a Discontinuous Galerkin Method
+	 <h4 class="media-heading">Two-vertex generators of Jacobians of graphs
 </h4> 
-	 A paper written in collaboration with <a href="https://www.perimeterinstitute.ca/people/erik-schnetter" target="_blank">Dr. Erik Schnetter</a> at the <a href="https://www.perimeterinstitute.ca/" target="_blank"> Perimeter Institute</a> for Theoretical Physics, on using the <a href="https://en.wikipedia.org/wiki/Discontinuous_Galerkin_method" target="_blank">discontinuous Galerkin</a> method together with <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.92.9392&rep=rep1&type=pdf" target="_blank">sparse grids</a> to evolve scalar wave equations in higher dimensional spacetimes. We developed a julia package, <a href="https://github.com/ABAtanasov/GalerkinSparseGrids.jl" target="_blank">GalerkinSparseGrids.jl</a> for the implementation of this theory, and present its results for 5+1 and 6+1-dimensional wave evolutions in the paper. This yields a significant computational step forward in the capacity to solve hyperbolic partial differential equations in higher dimensional space, and we hope to extend this work to Einstein's equations in an anisotropic spacetime.
+	 This is a paper written at the SUMRY REU at Yale that responds to an open question of a recent paper of Becker and Glass. The Jacobian group is the group of divisors on a graph modulo chip firing (or the cokernel of the reduced graph laplacian) and has applications in Algebraic Geometry. This work was inspired by previous work of Sam Payne and Melanie Wood on the probability of a random graph having cyclic Jacobian. We proved a necessary and sufficient condition for a specific type of generator to exist based only on the orders of the Jacobians of a graph with and without a given edge. We also conducted various experiments using SageMath that yielded a few conjectures about the prevalence of these generators in Jacobians of random graphs (code can be found on my github).
 
-	 <p> <strong>(Fall 2017) Submitted to Journal of Classical and Quantum Gravity</strong> <a href="https://arxiv.org/abs/1710.09356">[arXiv]</a> <a href="Files/DG_sparse_grids.pdf">[PDF]</a> </p>
+	 <p> <strong>(Fall 2017) Submitted to Electronic Journal of Combinatorics</strong> <a href="https://arxiv.org/abs/1708.03069">[arXiv]</a> <a href="Files/manuscript.pdf">[PDF]</a> </p>
 		</div>
 	</div>
-	-->
+
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Approximation capabilities of fixed width neural networks
+</h4> 
+	 This is a report written for S&DS 670 Neural Nets with professor Andrew Barron. In it I critique a recent NIPS paper of Lu et. al entitled "The expressive power of neural nets: a view from the width". I consider the assumptions they are making and provide a simpler proof of a modified version of their main result. I also provide a general framework with which to view the results from this and some related papers to clarify how to pose the current open questions in the field. Lastly, I conduct some experiments to examine some of the conjectures made in the paper. 
+
+	 <p> <strong>(Fall 2017)</strong>   <a href="Files/670 class report.pdf">[PDF]</a> </p>
+		</div>
+	</div>
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">GPU performance for small neural networks
+</h4> 
+	 This is a final project for CPSC 424 Parallel Programming. In it, I conduct various experiments on the different hardware available through Yale high performance computing on the speed of training small neural networks. This work was in connection with my work at the Murray Lab, where we want to train many small neural network models rather than a few large ones as may be the case in more traditional machine learning settings. The paper shows how GPU's are not helpful in these cases and tries to find the brightline at which GPU's become advantageous, as well as explaining theoretically why this is the case. 
+
+	 <p> <strong>(Spring 2017)</strong>  <a href="Files/424 final project report.pdf">[PDF]</a> </p>
+		</div>
+	</div>
+
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Miller-Rabin primality testing and the extended Riemann hypothesis
+</h4> 
+	 This is an expository report prepared as a final project for Math 354 Number Theory. It explains the Miller-Rabin primality test and how the extended Riemann hypothesis (ERH) is used to prove the polynomial runtime of the algorithm. The paper walks through the proofs in the original paper about the algorithm and also proves the theorems from number theory about quadratic residues and teh ERH that Miller relied on to prove the runtime of his algorithm.  
+
+	 <p> <strong>(Spring 2017)</strong>  <a href="Files/354 final project.pdf">[PDF]</a> </p>
+		</div>
+	</div>
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Scalability Limits of HDFS
+</h4> 
+	 This is a paper written as a final project for CPSC 438 Database Systems. It explores the scalability limits of the Hadoop Distributed File System (HDFS), we conjecture and expirementally verify a memory botteleneck on the NameNode of the system if there are many small files as opposed to few large files. 
+
+	 <p> <strong>(Spring 2016)</strong>  <a href="Files/CPSC 438 Final Project Paper.pdf">[PDF]</a> </p>
+		</div>
+	</div>
 
 
 	
@@ -131,23 +191,90 @@
     <hr class="featurette-divider">
 	<h2> Presentations and Lecture Notes </h2>
 
-	<!--
 	<div class="media">
-			  <div class="pull-left media-top">
-			  <img class="img-rounded" src="Files/3pt.png" alt="..." height="100" width="150"></img>   
-			  </div>
-			  <div class="media-body">
-			    <h4 class="media-heading"> 3D Conformal Field Theory and the Ising Model</h4> 
-				A set of lectures given both as a final presentation for my research in CFT over the spring of 2017, as well as a related talk given in the Fall as part of the Yale graduate seminar in representation theory, as an attempt to introduce the ideas of higher-dimensional CFT to a more mathematical audience with some background in the ideas of the Virasoro algebra for the 2D case.
-			    <p> <strong>(Spring, Fall 2017)</strong> <a href="Files/472 CFT.pdf">[Spring Talk]</a> <a href="Files/CFT for Rep Theory Seminar.pdf">[Fall Talk]</a></p>
-			  </div>
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Research Presentation at Murray Lab
+</h4> 
+	 
+
+	 <p> <strong>(Fall 2017)</strong>  <a href="Files/murray presentation.pdf">[Slides]</a> </p>
+		</div>
 	</div>
-	-->
 	
+
+
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Khintchine Inequality
+</h4> 
+	 
+
+
+	 <p> <strong>(Fall 2017)</strong>  <a href="Files/khintchine.pdf">[Slides]</a> </p>
+		</div>
+	</div>
+
+
+
+
+
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Jacobians of Graphs
+</h4> 
+	 
+
+	 <p> <strong>(Fall 2017)</strong>  <a href="Files/jacobians-graphs.pdf">[Slides]</a> </p>
+		</div>
+	</div>
 	
+
+
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Rodl Nibble
+</h4> 
+	 
+
+	 <p> <strong>(Fall 2017)</strong>  <a href="Files/345 presentation notes.pdf">[Notes]</a> <a href="Files/345 presentation handout.pdf">[Handout]</a> </p>
+		</div>
+	</div>
 			
 			
-		
+
+
+	<div class="media">
+	  <div class="pull-left media-top">
+	  <img class="img-rounded" src="Files/SparseGrid2.png" alt="..." height="150" width="150"></img>   
+	 </div>
+	 <p>
+	 <div class="media-body">
+	 <h4 class="media-heading">Auction Theory and Tropical Geometry
+</h4> 
+	 
+
+	 <p> <strong>(Fall 2017)</strong>  <a href="Files/Auction.pdf">[Slides]</a> </p>
+		</div>
+	</div>
 
 			
 					
@@ -157,7 +284,7 @@
 	<!-- ***************** Footer ********************** -->
 	<hr class="featurette-divider">
 	<footer>
-		<p class="text-center"> Updated Nov 12, 2017 </p>
+		<p class="text-center"> Updated Nov 13, 2017 </p>
 	</footer>
 </div>
 </body>
