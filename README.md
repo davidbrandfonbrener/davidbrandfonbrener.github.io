@@ -1,2 +1,2 @@
 # davidbrandfonbrener.github.io
-websote
+website
