@@ -1,0 +1,290 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>
+    
+      What happens when you use big neural nets for offline decision making? | David Brandfonbrener
+    
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <link rel="stylesheet" href="/assets/css/fonts.css">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+  <!-- <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script> -->
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+    integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+
+  <!-- The loading of KaTeX is deferred to speed up page rendering -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+    integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+
+  <!-- To automatically render math in text elements, include the auto-render extension: -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+    integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous">
+  </script>
+
+  <script>
+    delimiters = [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true},
+    ];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            "delimiters": delimiters
+        });
+    });
+  </script>
+
+  <!-- Vega plot embedding -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+
+
+  <!-- Cloudflare Web Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b7b74e4b8a9b4d639289f79b6cb40d1e"}'>
+  </script>
+  <!-- End Cloudflare Web Analytics -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="davidbrandfonbrener.github.io" />
+
+</head>
+
+
+<body>
+
+  <div class="container">
+    <header class="masthead">
+  <h1 class="masthead-title">
+    <a href="/">David Brandfonbrener</a>
+  </h1>
+    <!-- <br /> -->
+  <small class="masthead-subtitle"></small>
+  <div class="menu">
+  <!-- <nav class="social-icons">
+    
+      <a href="https://github.com/davidbrandfonbrener" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+    
+      <a href="mailto:david.brandfonbrener@nyu.edu" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+    
+  </nav> -->
+  <nav class="menu-content">
+    
+      <h3 class="menu-item"><a
+        href="/"
+        class="">
+        home
+      </a></h3>
+    
+      <h3 class="menu-item"><a
+        href="/menu/papers.html"
+        class="">
+        papers
+      </a></h3>
+    
+      <h3 class="menu-item"><a
+        href="/menu/blog.html"
+        class="">
+        blog
+      </a></h3>
+    
+  </nav>
+</div>
+
+
+</header>
+
+
+    <div class="post-container">
+      <h1>
+  What happens when you use big neural nets for offline decision making?
+</h1>
+
+  <span class="post-subtitle">A case for action-stable algorithms</span>
+
+
+
+
+<p>Recent results in supervised learning suggest that while overparameterized models have the capacity to overfit, they in fact generalize quite well<sup id="fnref:zhang" role="doc-noteref"><a href="#fn:zhang" class="footnote">1</a></sup><sup id="fnref:belkin" role="doc-noteref"><a href="#fn:belkin" class="footnote">2</a></sup>. We want to know whether these models also work well in decision making problems. Rather than going straight to the full RL problem that includes temporal credit assignment and exploration, we decided to start with an offline contextual bandit problem since this is most similar to the supervised problem. This lets us isolate the effects of the fact that in decision making problems we only see the outcome of the selected action rather than all possible actions, i.e. we only see <em>bandit feedback</em>.</p>
+
+<p>This post will go through an example that motivates what happens in this problem and introduce some of the main results from our recent paper <a href="https://arxiv.org/abs/2006.15368">Offline Contextual Bandits with Overparameterized Models</a>. Briefly, we find that policy-based algorithms can struggle with serious overfitting problems because their objectives are not <em>action-stable</em>, but value-based algorithms effectively leverage overparameterized models and are <em>action-stable</em>. Where action-stability is a property that we introduce that says that at each state there exists a prediction (action distribution or action-value vector) which is optimizes the algorithm’s objective no matter which action is observed in the data.</p>
+
+<hr />
+
+<h2 id="running-example">Running example</h2>
+
+<h3 id="data">Data</h3>
+
+<p>For the rest of the post we will work with this simple offline contextual bandit problem with $ d $-dimensional states and 2 actions:</p>
+
+<ul>
+  <li>States/contexts $ s_i \in \R^d $ are sampled iid from an isotropic, zero-mean Gaussian: $ s_i\sim \mathcal{N}(0, I)$</li>
+  <li>Full eward vectors $ r_i \in \R^2$ are a linear function of state, plus Gaussian noise: $ r_i = \theta^\top s_i + \epsilon_i$ where $ \epsilon_i \sim  \mathcal{N}(0, \epsilon I)$</li>
+  <li>Actions $ a_i \in {0,1}$ are chosen uniformly at random by the behavior policy $ \beta$.</li>
+</ul>
+
+<p>We will assume that the algorithm has access to the behavior $ \beta$ since issues of estimating $ \beta$ are orthogonal to our results. For our experiments we will sample $ \theta\in \R^{d\times 2}$ uniformly from $[0,1]^{d\times 2}$, we will set $ d=10$, $ \epsilon = 0.1$, and each dataset will have a training set of 100 datapoints and an independent test set of 500 datapoints.</p>
+
+<p>We can think of this problem as being perhaps the easiest or most natural problem to try out. So any algorithms that struggle on this problem should immediately raise some red flags.</p>
+
+<h3 id="algorithms">Algorithms</h3>
+
+<p>We will evaluate two algoirthms which we call <em>policy-based</em> and <em>value-based</em>. There are lots of variations of these algorithms and ways to combine them, but these two broad categories capture most of the algorithms that people use and sufficient to illustrate our main results. Below we define these algorithms formally.</p>
+
+<p><em>Policy-based</em> optimizes a policy to maximize an importance weighted estimate of the policy’s value:</p>
+
+\[\hat \pi = \arg\sup_{\pi\in \Pi}\frac{1}{N}\sum_{i=1}^N r_i(a_i) \frac{\pi(a_i\mid s_i)}{\beta(a_i\mid s_i)}\]
+
+<p><em>Value-based</em> learned a Q function by minimizing the mean squared error and then returns a greedy policy:</p>
+
+\[\widehat Q = \arg\inf_{Q \in \mathcal{Q}} \sum_{i=1}^N (Q(s_i, a_i) - r_i(a_i))^2\]
+
+<p>And then $ \pi_{\widehat Q}$ is the greedy policy with respect to $ \widehat Q$.</p>
+
+<p>Both of these algorithms have nice guarantees when we use small model classes<sup id="fnref:swam2" role="doc-noteref"><a href="#fn:swam2" class="footnote">3</a></sup> <sup id="fnref:chen" role="doc-noteref"><a href="#fn:chen" class="footnote">4</a></sup>. But, here we care about what happens when we have really big neural nets as our polciies and Q functions, which makes these guarantees vacuous. Practically, in our running example we will use one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.</p>
+
+<h3 id="results">Results</h3>
+
+<p>Now we can generate some results. Our measure of success will be the <em>regret</em> which is defined as</p>
+
+\[\text{Regret}(\pi) = V(\pi^*) - V(\pi) = \mathbb{E}_{s}\mathbb{E}_{a \sim \pi\mid s} \mathbb{E}_{r\mid s}[r(a)] - \mathbb{E}_{s}\mathbb{E}_{a \sim \pi^*\mid s} \mathbb{E}_{r\mid s}[r(a)]\]
+
+<p>Better policies have lower regret and the optimal policy has zero regret.</p>
+
+<p><img src="/assets/img/overparam_bandit/blog_bar.png" alt="blog_bar" /></p>
+
+<hr />
+
+<h2 id="whats-going-on-here">What’s going on here?</h2>
+
+<p>This contrast is pretty stark. Policy-based algorithms do much worse than value-based and not even so much better than random. But to get a better idea of what’s going on we introduce the concept of <span style="color:blue"><strong>action-stability</strong> </span>.</p>
+
+<p>It’s easiest to understand action-stability through a simple thought experiment. Take the dataset $ S $ and construct a perturbed $ \widetilde S $ where we leave all the states $ s_i$ and full reward vectors $ r_i $ the same, but we re-sample the actions from an independent sample from $ \beta$. Since nothing about the environment has changed, we know that the optimal policy remains the same. So we would hope that our learning objective would have the following property: there exists a single model which is optimal (with respect to that objective) on both $S_B$ and $\widetilde S_B$. We say that such an objective is <em>action-stable</em> because it has an optimal policy which is stable to re-sampling of the actions in the dataset. A more formal definition can be found in the <a href="https://arxiv.org/abs/2006.15368">paper</a>.</p>
+
+<p><img src="/assets/img/overparam_bandit/toy_stability.png" alt="stability" /></p>
+
+<p>The figure shows the results from conducting this thought experiment on our running example problem. We measure the TV distance between pairs of policies trained on datasets with re-sampled actions on a held out test set of states.  We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is <em>overfitting</em> based on the <em>observed actions</em>. This is different from overfitting to the <em>labels</em> in supervised learning since unlike lablels, we don’t think that the observed action should change the underlying optimal policy.</p>
+
+<p>This idea of overfitting can also be seen in the learning curves. Below we show the learning curves on one seed. The objectives are the ones from above (estimated value and MSE respectively) and “train value” is the value of the policy estimated at the states in the training set. While the policy-based objective keeps increasing, the value of the policy keeps decreasing. This support the idea that action-instability is causing overfitting.</p>
+
+<p><img src="/assets/img/overparam_bandit/toy_learning.png" alt="training" /></p>
+
+<p>But <em>why</em> is the policy-based objective not action-stable? To see this, It is useful to inspect the policy-based objective more carefully at just one datapoint:</p>
+
+\[r_i(a_i)\frac{\hat \pi(a_i\mid s_i)}{\beta(a_i\mid s_i)}.\]
+
+<p>If \(r_i(a_i) &gt; 0\) then we can maximize this objective by setting \(\hat \pi(a_i\mid s_i) = 1\). But if \(r_i(a') &gt; 0\) for some other action $ a’$, then if \(\beta\) had chosed \(a'\) we would instead have set \(\hat \pi(a'\mid s_i) =1\). But since \(\hat \pi(\cdot\mid s_i)\) must be a distribution that sums to 1, these two policies are mutually exclusive. This sort of phenomena makes the objective unstable to re-sampling the actions. This becomes especially noticeable when we use a big neural net model that can actually maximize our objective at every point.</p>
+
+<p>In the <a href="https://arxiv.org/abs/2006.15368">paper</a> we prove a more general lemma that any objective of the form $ f(s,r,a) \pi(a\mid s) $ is action-unstable unless $ f(s,r,a) &gt; 0 $ at exactly one action. This “unless” provides a potential route to avoiding problems with instability. For example, if we learn a baseline $ b(s) $ so that $ r_i(a_i) - b(s_i) $ is only positive for the optimal action then we would not have any problem. But, learning such a baseline is in general as hard as learning the Q function. There are certain special cases, like if we take a classification problem and turn it into a bandit with 0/1 rewards, where finding such a baseline is easy, and indeed some related work has found this to be quite successful<sup id="fnref:joach" role="doc-noteref"><a href="#fn:joach" class="footnote">5</a></sup>.</p>
+
+<p>In contrast, the value-based algorithm has an action-stable solution. Namely, if the vector over actions $ \widehat Q(s_i, \cdot)$ is equal to $ r_i $ then the loss is zero no matter which action we choose. This gives us the stable behavior we observe in the experiment.</p>
+
+<hr />
+
+<h2 id="some-theory">Some theory</h2>
+
+<p>We will defer the full theoretical perspective to the <a href="https://arxiv.org/abs/2006.15368">paper</a>, but we offer a taste here. Specifically, the following two theorems emphasize the difference between value-based and policy-based algorithms again. Since the value-based algorithms are essentially doing regression, we can reduce the policy learning problem to a regression problem<sup id="fnref:munos" role="doc-noteref"><a href="#fn:munos" class="footnote">6</a></sup><sup id="fnref:chen:1" role="doc-noteref"><a href="#fn:chen" class="footnote">4</a></sup>. This is encoded in the following theorem which basically says that the regret of the value-based policy is not too much more than the error in learning the Q function. However, this requires an assumption that the behavior is random enough that we see all actions from all states.</p>
+
+<p><strong>Theorem 1 (value-based reduction to regression):</strong> Assume that $ \beta(a\mid s) \geq \tau$ for all $ s,a$. Then,</p>
+
+\[V(\pi^*) - V(\pi_{\widehat Q}) \leq \frac{2}{\sqrt{\tau}} \sqrt{\mathbb{E}_{s}\mathbb{E}_{a \sim \beta\mid s}[(Q(s,a) - \widehat Q(s,a))^2]}.\]
+
+<p>But, algorithms like the generic policy-based algorithm that are action-unstable can suffer substantial regret <em>even</em> on the states/contexts in the training set and <em>even</em> when the behavior is random enough to see all states. In fact, the following theorem shows that action-unstable objectives are <em>worse</em> when the behavior is more stochastic, which confirms the idea that they are overfitting to noise in the actions.</p>
+
+<p><strong>Theorem 2 (policy-based in-sample regret lower bound):</strong> Define the in-sample value $ V(\pi; S) $ to be</p>
+
+\[V(\pi; S) = \frac{1}{N}\sum_{i=1}^N \mathbb{E}_{a\sim \pi\mid s_i}\mathbb{E}_{r\mid s_i}[r(a)].\]
+
+<p>Take any problem with two actions and let \(\Delta_r(s) = \mid \mathbb{E}_{r\mid s} [r(1) - r(2)]\mid\) bet the absolute expected gap in rewards at $s$. Define $p_u(s)$ to be the probability that the policy-based objective is action-unstable at $ x$. Assume that $ \beta(a\mid s) \geq \tau$ for all $ s,a$, and that our policy class $ \Pi $ is overparameterized so that it can interpolate the training objective. Then</p>
+
+\[\mathbb{E}_S[V(\pi^*;S) - V(\hat \pi; S)] \geq  \tau \mathbb{E}_{s}[ p_u(s) \Delta_r(s) ].\]
+
+<p>While we haven’t yet proved a more general lower bound on regret for specific model classes like neural nets, we have a more detailed discussion about why we think one may exist in the paper.</p>
+
+<hr />
+
+<h2 id="take-aways">Take aways</h2>
+
+<p>We took a brief look at what happens when we use overparameterized models in offline contextual bandit algorithms. While one might think that the same generalization properties from supervised learning might carry over, we find this is not the case. Specifically, policy-based algorithms are not action-stable  in general and this makes them very sensitive to overfitting. Value-based algorithms are able to generalize like supervised learning because they are essentially just doing regression.</p>
+
+<p>Of course there are a few caveats. With small model classes, model misspecification can be a much worse issue for value-based than policy-based algorithms. And without strict positivity, the use of greedy policies in value-based algorithms can lead to problems of extrapolation beyond the support of the data that we have assume away in this work.</p>
+
+<p>Full details as well as some larger scale expeirments on a bandit version of CIFAR can be found in the <a href="https://arxiv.org/abs/2006.15368">paper</a>. And don’t hesitate to reach out with comments or questions.</p>
+
+<hr />
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:zhang" role="doc-endnote">
+      <p>Zhang, C., Bengio, S., Hardt, M., Recht, B., &amp; Vinyals, O. (2016). Understanding deep learning requires rethinking generalization. <em>arXiv preprint arXiv:1611.03530</em>.</p>
+    </li>
+    <li id="fn:belkin" role="doc-endnote">
+      <p>Belkin, M., Hsu, D., Ma, S., &amp; Mandal, S. (2019). Reconciling modern machine-learning practice and the classical bias–variance trade-off. <em>Proceedings of the National Academy of Sciences</em>, <em>116</em>(32), 15849-15854.</p>
+    </li>
+    <li id="fn:swam2" role="doc-endnote">
+      <p>Swaminathan, A., &amp; Joachims, T. (2015, June). Counterfactual risk minimization: Learning from logged bandit feedback. In <em>International Conference on Machine Learning</em> (pp. 814-823). PMLR.</p>
+    </li>
+    <li id="fn:chen" role="doc-endnote">
+      <p>Chen, J., &amp; Jiang, N. (2019, May). Information-theoretic considerations in batch reinforcement learning. In <em>International Conference on Machine Learning</em> (pp. 1042-1051). PMLR.</p>
+    </li>
+    <li id="fn:joach" role="doc-endnote">
+      <p>Joachims, T., Swaminathan, A., &amp; de Rijke, M. (2018, February). Deep learning with logged bandit feedback. In <em>International Conference on Learning Representations</em>.</p>
+    </li>
+    <li id="fn:munos" role="doc-endnote">
+      <p>Munos, R., &amp; Szepesvári, C. (2008). Finite-Time Bounds for Fitted Value Iteration. <em>Journal of Machine Learning Research</em>, <em>9</em>(5).</p>
+    </li>
+  </ol>
+</div>
+
+
+<span class="post-date">
+  Written on
+  
+  February
+  25th,
+  2021
+  by
+  
+    David Brandfonbrener
+  
+</span>
+
+
+
+
+    </div>
+
+    <footer class="footer">
+  
+    <a href="https://github.com/davidbrandfonbrener" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+  
+    <a href="mailto:david.brandfonbrener@nyu.edu" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+  <!-- <div class="post-date"><a href="/menu/about.html">David Brandfonbrener |  by David Brandfonbrener</a></div> -->
+  <div class="theme-credit"><a href="https://lenpaul.github.io/Lagrange/">Theme: Lagrange by Paul Le via Will Whitney</a></div>
+</footer>
+
+
+  </div>
+
+</body>
+</html>
