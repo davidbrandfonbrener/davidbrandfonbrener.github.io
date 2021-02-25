@@ -70,7 +70,7 @@ We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $
 
 ## What's going on here?
 
-This contrast is pretty stark. Policy-based algorithms do much worse than value-based and not even so much better than random. But to get a better idea of what's going on we introduce the concept of <span style="color:blue">**action-stability** </span>.
+This contrast is pretty stark. Policy-based algorithms do much worse than value-based and not even so much better than random. But to get a better idea of what's going on we introduce the concept of ***action-stability***.
 
 It's easiest to understand action-stability through a simple thought experiment. Take the dataset $ S $ and construct a perturbed $ \widetilde S $ where we leave all the states $ s_i$ and full reward vectors $ r_i $ the same, but we re-sample the actions from an independent sample from $ \beta$. Since nothing about the environment has changed, we know that the optimal policy remains the same. So we would hope that our learning objective would have the following property: there exists a single model which is optimal (with respect to that objective) on both $S_B$ and $\widetilde S_B$. We say that such an objective is *action-stable* because it has an optimal policy which is stable to re-sampling of the actions in the dataset. A more formal definition can be found in the [paper](https://arxiv.org/abs/2006.15368).
 
