@@ -18,8 +18,8 @@ This post will go through an example that motivates what happens in this problem
 For the rest of the post we will work with this simple offline contextual bandit problem with $ d $-dimensional states and 2 actions:
 
 - States/contexts $ s_i \in \R^d $ are sampled iid from an isotropic, zero-mean Gaussian: $ s_i\sim \mathcal{N}(0, I)$
-- Full eward vectors $ r_i \in \R^2$ are a linear function of state, plus Gaussian noise: $ r_i = \theta^\top s_i + \epsilon_i$ where $ \epsilon_i \sim  \mathcal{N}(0, \epsilon I)$ 
-- Actions $ a_i \in \{0,1\}$ are chosen uniformly at random by the behavior policy $ \beta$.
+- Full reward vectors $ r_i \in \R^2$ are a linear function of state, plus Gaussian noise: $ r_i = \theta^\top s_i + \epsilon_i$ where $ \epsilon_i \sim  \mathcal{N}(0, \epsilon I)$ 
+- Actions $ a_i \in$ \{0,1\}​ are chosen uniformly at random by the behavior policy $ \beta$.
 
 We will assume that the algorithm has access to the behavior $ \beta$ since issues of estimating $ \beta$ are orthogonal to our results. For our experiments we will sample $ \theta\in \R^{d\times 2}$ uniformly from $[0,1]^{d\times 2}$, we will set $ d=10$, $ \epsilon = 0.1$, and each dataset will have a training set of 100 datapoints and an independent test set of 500 datapoints. 
 
@@ -47,7 +47,7 @@ $$
 
 And then $ \pi_{\widehat Q}$ is the greedy policy with respect to $ \widehat Q$.
 
-Both of these algorithms have nice guarantees when we use small model classes[^swam2] [^chen]. But, here we care about what happens when we have really big neural nets as our polciies and Q functions, which makes these guarantees vacuous. Practically, in our running example we will use one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.
+Both of these algorithms have nice guarantees when we use small model classes[^swam2] [^chen]. But, here we care about what happens when we have really big neural nets as our policies and Q functions, which makes these guarantees vacuous. Practically, in our running example we will use one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.
 
 ### Results
 
@@ -61,7 +61,7 @@ $$
 
 We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples, and plot the results in the figure below. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.
 
-![blog_bar](/assets/img/overparam_bandit/blog_bar.png)
+<figure><img src="/assets/img/overparam_bandit/blog_bar.png" width="500"/></figure>
 
 ---
 
@@ -71,13 +71,13 @@ This contrast is pretty stark. Policy-based algorithms do much worse than value-
 
 It's easiest to understand action-stability through a simple thought experiment. Take the dataset $ S $ and construct a perturbed $ \widetilde S $ where we leave all the states $ s_i$ and full reward vectors $ r_i $ the same, but we re-sample the actions from an independent sample from $ \beta$. Since nothing about the environment has changed, we know that the optimal policy remains the same. So we would hope that our learning objective would have the following property: there exists a single model which is optimal (with respect to that objective) on both $S_B$ and $\widetilde S_B$. We say that such an objective is *action-stable* because it has an optimal policy which is stable to re-sampling of the actions in the dataset. A more formal definition can be found in the [paper](https://arxiv.org/abs/2006.15368).
 
-![stability](/assets/img/overparam_bandit/toy_stability.png)
+<figure><img src="/assets/img/overparam_bandit/toy_stability.png" width="700"/></figure>
 
-The figure shows the results from conducting this thought experiment on our running example problem. We measure the TV distance between pairs of policies trained on datasets with re-sampled actions on a held out test set of states.  We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is *overfitting* based on the *observed actions*. This is different from overfitting to the *labels* in supervised learning since unlike lablels, we don't think that the observed action should change the underlying optimal policy.
+The figure shows the results from conducting this thought experiment on our running example problem. We measure the TV distance between pairs of policies trained on datasets with re-sampled actions on a held out test set of states.  We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is *overfitting* based on the *observed actions*. This is different from overfitting to the *labels* in supervised learning since unlike labels, we don't think that the observed action should change the underlying optimal policy.
 
-This idea of overfitting can also be seen in the learning curves. Below we show the learning curves on one seed. The objectives are the ones from above (estimated value and MSE respectively) and "train value" is the value of the policy estimated at the states in the training set. While the policy-based objective keeps increasing, the value of the policy keeps decreasing. This support the idea that action-instability is causing overfitting.
+This idea of overfitting can also be seen in the learning curves. Below we show the learning curves on one seed. The objectives are the ones from above (estimated value and MSE respectively) and "train value" is the value of the policy estimated at the states in the training set. While the policy-based objective keeps increasing, the value of the policy keeps decreasing. This supports the idea that action-instability is causing overfitting.
 
-![training](/assets/img/overparam_bandit/toy_learning.png)
+<figure><img src="/assets/img/overparam_bandit/toy_learning.png" width="700"/></figure>
 
 But *why* is the policy-based objective not action-stable? To see this, It is useful to inspect the policy-based objective more carefully at just one datapoint:
 
@@ -87,7 +87,7 @@ r_i(a_i)\frac{\hat \pi(a_i\mid s_i)}{\beta(a_i\mid s_i)}.
 $$
 
 
-If $$ r_i(a_i) > 0 $$ then we can maximize this objective by setting $$ \hat \pi(a_i\mid s_i) = 1 $$. But if $$ r_i(a') > 0 $$ for some other action $ a'$, then if $$ \beta $$ had chosed $$ a' $$ we would instead have set $$ \hat \pi(a'\mid s_i) =1 $$. But since $$ \hat \pi(\cdot\mid s_i) $$ must be a distribution that sums to 1, these two policies are mutually exclusive. This sort of phenomena makes the objective unstable to re-sampling the actions. This becomes especially noticeable when we use a big neural net model that can actually maximize our objective at every point.
+If $$ r_i(a_i) > 0 $$ then we can maximize this objective by setting $$ \hat \pi(a_i\mid s_i) = 1 $$. But if $$ r_i(a') > 0 $$ for some other action $ a'$, then if $$ \beta $$ had chosen $$ a' $$ we would instead have set $$ \hat \pi(a'\mid s_i) =1 $$. Since $$ \hat \pi(\cdot\mid s_i) $$ must be a distribution that sums to 1, these two policies are mutually exclusive. This sort of phenomena makes the objective unstable to re-sampling the actions. This becomes especially noticeable when we use a big neural net model that can actually maximize our objective at every point.
 
 In the [paper](https://arxiv.org/abs/2006.15368) we prove a more general lemma that any objective of the form $ f(s,r,a) \pi(a\mid s) $ is action-unstable unless $ f(s,r,a) > 0 $ at exactly one action. This "unless" provides a potential route to avoiding problems with instability. For example, if we learn a baseline $ b(s) $ so that $ r_i(a_i) - b(s_i) $ is only positive for the optimal action then we would not have any problem. But, learning such a baseline is in general as hard as learning the Q function. There are certain special cases, like if we take a classification problem and turn it into a bandit with 0/1 rewards, where finding such a baseline is easy, and indeed some related work has found this to be quite successful[^joach].
 
@@ -97,7 +97,7 @@ In contrast, the value-based algorithm has an action-stable solution. Namely, if
 
 ## Some theory
 
-We will defer the full theoretical perspective to the [paper](https://arxiv.org/abs/2006.15368), but we offer a taste here. Specifically, the following two theorems emphasize the difference between value-based and policy-based algorithms again. Since the value-based algorithms are essentially doing regression, we can reduce[^chen][^munos] the policy learning problem to a regression problemwhere we expect overparameterized models to still perform well [^belkin][^bach][^bartlett]. This is encoded in the following theorem which basically says that the regret of the value-based policy is not too much more than the error in learning the Q function. However, this requires an assumption that the behavior is random enough that we see all actions from all states. 
+We will defer the full theoretical perspective to the [paper](https://arxiv.org/abs/2006.15368), but we offer a taste here. Specifically, the following two theorems emphasize the difference between value-based and policy-based algorithms again. Since the value-based algorithms are essentially doing regression, we can reduce[^chen][^munos] the policy learning problem to a regression problem where we expect overparameterized models to still perform well [^belkin][^bach][^bartlett]. This is encoded in the following theorem which basically says that the regret of the value-based policy is not too much more than the error in learning the Q function. However, this requires an assumption that the behavior is random enough that we see all actions from all states. 
 
 **Theorem 1 (value-based reduction to regression):** Assume that $ \beta(a\mid s) \geq \tau$ for all $ s,a$. Then,
 
@@ -135,9 +135,13 @@ We took a brief look at what happens when we use overparameterized models in off
 
 Of course there are a few caveats. With small model classes, model misspecification can be a much worse issue for value-based than policy-based algorithms. And without strict positivity, the use of greedy policies in value-based algorithms can lead to problems of extrapolation beyond the support of the data that we have assume away in this work. 
 
-Full details as well as some larger scale expeirments on a bandit version of CIFAR can be found in the [paper](https://arxiv.org/abs/2006.15368). And don't hesitate to reach out with comments or questions.
+Full details as well as some larger scale experiments on a bandit version of CIFAR can be found in the [paper](https://arxiv.org/abs/2006.15368). And don't hesitate to reach out with comments or questions.
 
+---
 
+**Acknowledgements** 
+
+Thanks to Will Whitney for editing this post. And thanks to my co-authors Will Whitney (again), Rajesh Ranganath, and Joan Bruna.
 
 ---
 
@@ -152,3 +156,4 @@ Full details as well as some larger scale expeirments on a bandit version of CIF
 
 [^bach]: Bach, F. (2017). Breaking the curse of dimensionality with convex neural networks. *The Journal of Machine Learning Research*, *18*(1), 629-681.
 [^bartlett]: Bartlett, P. L., Long, P. M., Lugosi, G., & Tsigler, A. (2020). Benign overfitting in linear regression. *Proceedings of the National Academy of Sciences*, *117*(48), 30063-30070.
+
