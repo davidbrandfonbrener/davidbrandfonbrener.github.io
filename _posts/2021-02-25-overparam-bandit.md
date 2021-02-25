@@ -7,9 +7,9 @@ date: 2021-02-25
 
 Recent results in supervised learning suggest that while overparameterized models have the capacity to overfit, they in fact generalize quite well[^zhang][^belkin]. We want to know whether these models also work well in decision making problems. Rather than going straight to the full RL problem that includes temporal credit assignment and exploration, we decided to start with an offline contextual bandit problem since this is most similar to the supervised problem. This lets us isolate the effects of the fact that in decision making problems we only see the outcome of the selected action rather than all possible actions, i.e. we only see *bandit feedback*. 
 
-This post will go through an example that motivates what happens in this problem and introduce some of the main results from our recent paper [Offline Contextual Bandits with Overparameterized Models](https://arxiv.org/abs/2006.15368). Briefly, we find that:
+This post will go through an example that motivates what happens in this problem and introduce some of the main results from our recent paper [Offline Contextual Bandits with Overparameterized Models](https://arxiv.org/abs/2006.15368). Briefly, our main results are the following:
 
-1. Policy-based algorithms can struggle with serious overfitting problems.  
+1. We find that policy-based algorithms can struggle with serious overfitting problems when value based algorithms do not.  
 2. We introduce the concept of an *action-stable* objective to explain this phenomena. An objective is action-stable if at each state there exists a prediction (action distribution or action-value vector) which is optimizes the algorithm's objective no matter which action is observed in the data.
 
 ---
