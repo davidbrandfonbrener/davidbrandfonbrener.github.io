@@ -59,7 +59,7 @@ $$
 $$
 
 
-Better policies have lower regret and the optimal policy has zero regret.
+We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples, and plot the results in the figure below. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.
 
 ![blog_bar](/assets/img/overparam_bandit/blog_bar.png)
 
