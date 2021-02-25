@@ -97,7 +97,7 @@ In contrast, the value-based algorithm has an action-stable solution. Namely, if
 
 ## Some theory
 
-We will defer the full theoretical perspective to the [paper](https://arxiv.org/abs/2006.15368), but we offer a taste here. Specifically, the following two theorems emphasize the difference between value-based and policy-based algorithms again. Since the value-based algorithms are essentially doing regression, we can reduce the policy learning problem to a regression problem[^munos][^chen]. This is encoded in the following theorem which basically says that the regret of the value-based policy is not too much more than the error in learning the Q function. However, this requires an assumption that the behavior is random enough that we see all actions from all states. 
+We will defer the full theoretical perspective to the [paper](https://arxiv.org/abs/2006.15368), but we offer a taste here. Specifically, the following two theorems emphasize the difference between value-based and policy-based algorithms again. Since the value-based algorithms are essentially doing regression, we can reduce[^chen][^munos] the policy learning problem to a regression problemwhere we expect overparameterized models to still perform well [^belkin][^bach][^bartlett]. This is encoded in the following theorem which basically says that the regret of the value-based policy is not too much more than the error in learning the Q function. However, this requires an assumption that the behavior is random enough that we see all actions from all states. 
 
 **Theorem 1 (value-based reduction to regression):** Assume that $ \beta(a\mid s) \geq \tau$ for all $ s,a$. Then,
 
@@ -149,3 +149,6 @@ Full details as well as some larger scale expeirments on a bandit version of CIF
 [^swam]: Swaminathan, A., & Joachims, T. (2015). The self-normalized estimator for counterfactual learning. In *advances in neural information processing systems* (pp. 3231-3239).
 [^joach]: Joachims, T., Swaminathan, A., & de Rijke, M. (2018, February). Deep learning with logged bandit feedback. In *International Conference on Learning Representations*.
 [^munos]:Munos, R., & Szepesvári, C. (2008). Finite-Time Bounds for Fitted Value Iteration. *Journal of Machine Learning Research*, *9*(5).
+
+[^bach]: Bach, F. (2017). Breaking the curse of dimensionality with convex neural networks. *The Journal of Machine Learning Research*, *18*(1), 629-681.
+[^bartlett]: Bartlett, P. L., Long, P. M., Lugosi, G., & Tsigler, A. (2020). Benign overfitting in linear regression. *Proceedings of the National Academy of Sciences*, *117*(48), 30063-30070.
