@@ -168,7 +168,7 @@
 
 \[\text{Regret}(\pi) = V(\pi^*) - V(\pi) = \mathbb{E}_{s}\mathbb{E}_{a \sim \pi\mid s} \mathbb{E}_{r\mid s}[r(a)] - \mathbb{E}_{s}\mathbb{E}_{a \sim \pi^*\mid s} \mathbb{E}_{r\mid s}[r(a)]\]
 
-<p>Better policies have lower regret and the optimal policy has zero regret.</p>
+<p>We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples, and plot the results in the figure below. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.</p>
 
 <p><img src="/assets/img/overparam_bandit/blog_bar.png" alt="blog_bar" /></p>
 
