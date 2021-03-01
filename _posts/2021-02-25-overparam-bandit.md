@@ -30,7 +30,7 @@ We can think of this problem as being perhaps the easiest or most natural proble
 
 ### Algorithms
 
-We will evaluate two algorithms which we call *policy-based* and *value-based*. There are lots of variations of these algorithms and ways to combine them, but these two broad categories capture most of the algorithms that people use and sufficient to illustrate our main results. Below we define these algorithms formally.
+We will evaluate two algorithms which we call *policy-based* and *value-based*. There are lots of variations of these algorithms and ways to combine them, but these two broad categories capture most of the algorithms that people use and are sufficient to illustrate our main results. Below we define these algorithms formally.
 
 *Policy-based* optimizes a policy to maximize an importance weighted estimate of the policy's value:
 
@@ -47,7 +47,7 @@ $$
 
 
 
-Both of these algorithms have nice guarantees when we use small model classes[^swam2] [^chen]. But, here we care about what happens when we have really big neural nets as our policies and Q functions, which makes these guarantees vacuous. Practically, in our running example we will use one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.
+Both of these algorithms have nice guarantees when we use small model classes[^swam2] [^chen]. But, when we have really big neural nets as our policies and Q functions these guarantees are vacuous. Practically, in our running example we will use one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.
 
 ### Results
 
@@ -69,7 +69,7 @@ We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $
 
 This contrast is pretty stark. Policy-based algorithms do much worse than value-based and not even so much better than random. But to get a better idea of what's going on we introduce the concept of ***action-stability***.
 
-It's easiest to understand action-stability through a simple thought experiment. Take the dataset $ S $ and construct a perturbed $ \widetilde S $ where we leave all the states $ s_i$ and full reward vectors $ r_i $ the same, but we re-sample the actions from an independent sample from $ \beta$. Since nothing about the environment has changed, we know that the optimal policy remains the same. So we would hope that our learning objective would have the following property: there exists a single model which is optimal (with respect to that objective) on both $S$ and $\widetilde S$. We say that such an objective is *action-stable* because it has an optimal policy which is stable to re-sampling of the actions in the dataset. A more formal definition can be found in the [paper](https://arxiv.org/abs/2006.15368).
+It's easiest to understand action-stability through a simple thought experiment. Take the dataset $ S $ and construct a perturbed $ \widetilde S $ where we leave all the states $ s_i$ and full reward vectors $ r_i $ the same, but we re-sample the actions from an independent sample from $ \beta$. Since nothing about the environment has changed, we know that the optimal policy remains the same. So we would hope that our learning objective would have the following property: there exists at least one model which is optimal (with respect to that objective) on both $S$ and $\widetilde S$. We say that such an objective is *action-stable* because it has an optimal policy which is stable to re-sampling of the actions in the dataset. A more formal definition can be found in the [paper](https://arxiv.org/abs/2006.15368).
 
 <figure><img src="/assets/img/overparam_bandit/toy_stability.png" width="700"/></figure>
 
