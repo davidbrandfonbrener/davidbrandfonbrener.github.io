@@ -5,7 +5,7 @@ date: 2021-02-25
 
 ---
 
-Recent results in supervised learning suggest that while overparameterized models have the capacity to overfit, they in fact generalize quite well[^zhang][^belkin]. We wanted to know whether these models also work well in decision making problems. Rather than going straight to the full RL problem that includes temporal credit assignment and exploration, we decided to start with an offline contextual bandit problem since this is most similar to the supervised problem. This lets us isolate the effects of the fact that decision making problems only reveal the outcome of the selected action instead of all possible actions, i.e. we only see *bandit feedback*. 
+Recent results in supervised learning suggest that while overparameterized models have the capacity to overfit, they in fact generalize quite well[^zhang][^belkin]. We wanted to know whether these models also work well in decision making problems. Rather than going straight to the full RL problem that includes temporal credit assignment and exploration, we decided to start with an offline contextual bandit problem since this is most similar to the supervised problem. This lets us isolate the difference between a decision making and supervised problem. Namely, a decision making problem only observes *bandit feedback* meaning that at each state we only see the outcome of the selected action instead of all possible actions. 
 
 This post will go through an example problem to introduce some of the main results from our recent paper [Offline Contextual Bandits with Overparameterized Models](https://arxiv.org/abs/2006.15368). Briefly, our main results are the following:
 
@@ -14,11 +14,11 @@ This post will go through an example problem to introduce some of the main resul
 
 ---
 
-## Running example
+## A running example
+
+Before diving in, recall that in a contextual bandit problem our goal is to learn a policy $ \pi $ which chooses actions to maximize expected reward. In an *offline* contextual bandit problem we only have access to data collected by a behavior policy $ \beta$ and cannot choose the actions during training. For the rest of the post we will work with this simple offline contextual bandit problem with $ d $-dimensional states and 2 actions defined below.
 
 ### Data
-
-For the rest of the post we will work with this simple offline contextual bandit problem with $ d $-dimensional states and 2 actions:
 
 - States/contexts $ s_i \in \R^d $ are sampled iid from an isotropic, zero-mean Gaussian: $ s_i\sim \mathcal{N}(0, I)$
 - Actions $ a_i \in$ \{0,1\}​ are chosen uniformly at random by the behavior policy $ \beta$.
@@ -51,7 +51,7 @@ Both of these algorithms have nice guarantees when we use small model classes[^s
 
 ### Results
 
-Now we can generate some results. Our measure of success will be the *regret* which is defined as
+Now we can generate some results. The goal is to minimize the *regret* which is the difference between our learned policy and the optimal policy $ \pi^*$. Explicitly, we can define the regret of a policy $ \pi $ as
 
 
 $$
@@ -59,7 +59,7 @@ $$
 $$
 
 
-We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples, and plot the results in the figure below. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.
+We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples, and plot the regret on a held out test set in the figure below. Error bars show the standard deviation over seeds. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.
 
 <figure><img src="/assets/img/overparam_bandit/blog_bar.png" width="500"/></figure>
 
@@ -73,9 +73,9 @@ It's easiest to understand action-stability through a simple thought experiment.
 
 <figure><img src="/assets/img/overparam_bandit/toy_stability.png" width="700"/></figure>
 
-The figure shows the results from conducting this thought experiment on our running example problem. We measure the TV distance between pairs of policies trained on datasets with re-sampled actions on a held out test set of states.  We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is *overfitting* based on the *observed actions*. This is different from overfitting to the *labels* in supervised learning since unlike labels, we don't think that the observed action should change the underlying optimal policy.
+The figure shows the results from conducting this thought experiment on our running example problem. We measure the expected state-conditional TV distance (i.e. $$\mathbb{E}_s[D_{TV}(\pi_1(\cdot|s)\| \pi_2(\cdot|s))] $$) between pairs of policies trained on datasets with re-sampled actions on a held out test set of states.  We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is *overfitting* based on the *observed actions*. This is different from overfitting to the *labels* in supervised learning since unlike labels, we don't think that the observed action should change the underlying optimal policy.
 
-This idea of overfitting can also be seen in the learning curves. Below we show the learning curves on one seed. The objectives are the ones from above (estimated value and MSE respectively) and "train value" is the value of the policy estimated at the states in the training set. While the policy-based objective keeps increasing, the value of the policy keeps decreasing. This supports the idea that action-instability is causing overfitting.
+This idea of overfitting can also be seen in the learning curves. Below we show the learning curves on one seed. The objectives are the ones from above (estimated value for policy-based and MSE for value-based). "Train value" is the value of the policy estimated at the states in the training set. While the policy-based objective keeps increasing, the value of the policy keeps decreasing. This supports the idea that action-instability is causing overfitting.
 
 <figure><img src="/assets/img/overparam_bandit/toy_learning.png" width="700"/></figure>
 
@@ -118,14 +118,14 @@ V(\pi; S) = \frac{1}{N}\sum_{i=1}^N \mathbb{E}_{a\sim \pi\mid s_i}\mathbb{E}_{r\
 $$
 
 
-Take any problem with two actions and let $$ \Delta_r(s) = \mid \mathbb{E}_{r\mid s} [r(1) - r(2)]\mid $$ bet the absolute expected gap in rewards at $s$. Define $p_u(s)$ to be the probability that the policy-based objective is action-unstable at $ x$. Assume that $ \beta(a\mid s) \geq \tau$ for all $ s,a$, and that our policy class $ \Pi $ is overparameterized so that it can interpolate the training objective. Then 
+Take any problem with two actions and let $$ \Delta_r(s) = \mid \mathbb{E}_{r\mid s} [r(0) - r(1)]\mid $$ bet the absolute expected gap in rewards at $s$. Define $p_u(s)$ to be the probability that the policy-based objective is action-unstable at $ x$. Assume that $ \beta(a\mid s) \geq \tau$ for all $ s,a$, and that our policy class $ \Pi $ is overparameterized so that it can interpolate the training objective. Then 
 
 
 $$
 \mathbb{E}_S[V(\pi^*;S) - V(\hat \pi; S)] \geq  \tau \mathbb{E}_{s}[ p_u(s) \Delta_r(s) ].
 $$
 
-While we haven't yet proved a more general lower bound on regret for specific model classes like neural nets, we have a more detailed discussion about why we think one may exist in the paper.
+This tells us that due to action instability we will always suffer some non-negligible regret on the training states. Note that the regret is *larger* for larger values of $ \tau$. This means that better coverage causes more overfitting due to action-instability and supports the idea that action-unstable objectives treat stochasticity in the actions as noise. While we haven't yet proved a more lower bound on the out-of-sample regret for specific model classes like neural nets, we have a more detailed discussion about why we think one may exist in the paper.
 
 ---
 
@@ -133,7 +133,7 @@ While we haven't yet proved a more general lower bound on regret for specific mo
 
 We took a brief look at what happens when we use overparameterized models in offline contextual bandit algorithms. While one might think that the same generalization properties from supervised learning might carry over, we find this is not the case. Specifically, policy-based algorithms are not action-stable  in general and this makes them very sensitive to overfitting. Value-based algorithms are able to generalize like supervised learning because they are essentially just doing regression. 
 
-Of course there are a few caveats. With small model classes, model misspecification can be a much worse issue for value-based than policy-based algorithms. And without strict positivity, the use of greedy policies in value-based algorithms can lead to problems of extrapolation beyond the support of the data that we have assume away in this work. 
+Of course there are a few caveats. With small model classes, model misspecification can be a much worse issue for value-based than policy-based algorithms. And without assuming $ \beta(a|s) \geq \tau$, the use of greedy policies in value-based algorithms can lead to problems of extrapolation beyond the support of the data[^fuji] that we have assume away in this work. 
 
 Full details as well as some larger scale experiments on a bandit version of CIFAR can be found in the [paper](https://arxiv.org/abs/2006.15368). And don't hesitate to reach out with comments or questions.
 
@@ -141,7 +141,7 @@ Full details as well as some larger scale experiments on a bandit version of CIF
 
 **Acknowledgements** 
 
-Thanks to Will Whitney and Evgenii Nikishin for reading drafts of this post. And thanks to my co-authors Will Whitney (again), Rajesh Ranganath, and Joan Bruna.
+Thanks to my co-authors Will Whitney, Rajesh Ranganath, and Joan Bruna. And thanks to Mark Goldstein and Evgenii Nikishin for providing feedback on a draft of this post.
 
 ---
 
@@ -156,4 +156,6 @@ Thanks to Will Whitney and Evgenii Nikishin for reading drafts of this post. And
 
 [^bach]: Bach, F. (2017). Breaking the curse of dimensionality with convex neural networks. *The Journal of Machine Learning Research*, *18*(1), 629-681.
 [^bartlett]: Bartlett, P. L., Long, P. M., Lugosi, G., & Tsigler, A. (2020). Benign overfitting in linear regression. *Proceedings of the National Academy of Sciences*, *117*(48), 30063-30070.
+
+[^fuji]: Fujimoto, S., Meger, D., & Precup, D. (2019, May). Off-policy deep reinforcement learning without exploration. In *International Conference on Machine Learning* (pp. 2052-2062). PMLR.
 
