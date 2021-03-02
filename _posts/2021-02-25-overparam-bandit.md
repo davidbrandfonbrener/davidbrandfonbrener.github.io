@@ -16,7 +16,9 @@ This post will go through an example problem to introduce some of the main resul
 
 ## A running example
 
-Before diving in, recall that in a contextual bandit problem our goal is to learn a policy $ \pi $ which chooses actions to maximize expected reward. In an *offline* contextual bandit problem we only have access to data collected by a behavior policy $ \beta$ and cannot choose the actions during training. For the rest of the post we will work with this simple offline contextual bandit problem with $ d $-dimensional states and 2 actions defined below.
+Before diving in, recall that in a contextual bandit problem our goal is to learn a policy $ \pi $ which chooses actions to maximize expected reward. In an *offline* contextual bandit problem we only have access to data collected by a behavior policy $ \beta$ and cannot choose the actions during training. 
+
+For the rest of the post we will use the simple offline contextual bandit problem with $ d $-dimensional states and 2 actions defined below to present the main ideas of our paper.
 
 ### Data
 
