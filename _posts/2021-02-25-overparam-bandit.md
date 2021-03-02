@@ -135,7 +135,7 @@ This tells us that due to action instability we will always suffer some non-negl
 
 We took a brief look at what happens when we use overparameterized models in offline contextual bandit algorithms. While one might think that the same generalization properties from supervised learning might carry over, we find this is not the case. Specifically, policy-based algorithms are not action-stable  in general and this makes them very sensitive to overfitting. Value-based algorithms are able to generalize like supervised learning because they are essentially just doing regression. 
 
-Of course there are a few caveats. With small model classes, model misspecification can be a much worse issue for value-based than policy-based algorithms. And without assuming $ \beta(a|s) \geq \tau$, the use of greedy policies in value-based algorithms can lead to problems of extrapolation beyond the support of the data[^fuji] that we have assume away in this work. 
+Of course there are a few caveats. With small model classes, model misspecification can be a much worse issue for value-based than policy-based algorithms. And without assuming $ \beta(a\mid s) \geq \tau$, the use of greedy policies in value-based algorithms can lead to problems of extrapolation beyond the support of the data[^fuji] that we have assume away in this work. 
 
 Full details as well as some larger scale experiments on a bandit version of CIFAR can be found in the [paper](https://arxiv.org/abs/2006.15368). And don't hesitate to reach out with comments or questions.
 
