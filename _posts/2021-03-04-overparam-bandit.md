@@ -1,7 +1,7 @@
 ---
 title: What happens when you use big neural nets for offline decision making?
 subtitle: A case for action-stable algorithms
-date: 2021-02-25
+date: 2021-03-04
 
 ---
 
