@@ -5,30 +5,27 @@ date: 2021-02-25
 
 ---
 
-Recent results in supervised learning suggest that while overparameterized models have the capacity to overfit, they in fact generalize quite well[^zhang][^belkin]. We wanted to know whether these models also work well in decision making problems. Rather than going straight to the full RL problem that includes temporal credit assignment and exploration, we decided to start with an offline contextual bandit problem since this is most similar to the supervised problem. This lets us isolate the difference between a decision making and supervised problem. Namely, a decision making problem only observes *bandit feedback* meaning that at each state we only see the outcome of the selected action instead of all possible actions. 
+Recent results in supervised learning suggest that while overparameterized models have the capacity to overfit, they in fact generalize quite well[^zhang][^belkin]. We wanted to know whether these models also work well in decision making problems. Rather than going straight to the full RL problem that includes temporal credit assignment and exploration, we decided to start with an offline contextual bandit problem. This lets us isolate the fundamental difference between a decision making and supervised problem. Namely, a decision making problem only observes *bandit feedback* meaning that at each state we only see the outcome of the selected action instead of all possible actions. 
 
 This post will go through an example problem to introduce some of the main results from our recent paper [Offline Contextual Bandits with Overparameterized Models](https://arxiv.org/abs/2006.15368). Briefly, our main results are the following:
 
 1. We find that policy-based algorithms can struggle with serious overfitting problems when value based algorithms do not.  
 2. We introduce the concept of an *action-stable* objective to explain this phenomena. An objective is action-stable at a state if there exists a prediction (action distribution or action-value vector) which optimizes the algorithm's objective no matter which action is observed at that state.
 
+<figure>
+  <img src="/assets/img/overparam_bandit/toy_stability.png" width="700"/>
+  <figcaption>We run policy-based and value-based algorithms on 20 datasets from the same contextual bandit problem with the exact same states but with re-sampled actions. Then we measure the expected state-conditioned TV distance between policies trained on different datasets. Since policy-based algorithms are not action-stable they produce drastically different policies depending on which actions are sampled. Full details below.</figcaption>
+</figure>
+
 ---
 
-## A running example
+## Setup
 
 Before diving in, recall that in a contextual bandit problem our goal is to learn a policy $ \pi $ which chooses actions to maximize expected reward. In an *offline* contextual bandit problem we only have access to data collected by a behavior policy $ \beta$ and cannot choose the actions during training. 
 
-For the rest of the post we will use the simple offline contextual bandit problem with $ d $-dimensional states and 2 actions defined below to present the main ideas of our paper.
+### Notation
 
-### Data
-
-- States/contexts $ s_i \in \R^d $ are sampled iid from an isotropic, zero-mean Gaussian: $ s_i\sim \mathcal{N}(0, I)$
-- Actions $ a_i \in$ \{0,1\}​ are chosen uniformly at random by the behavior policy $ \beta$.
-- Full reward vectors $ r_i \in \R^2$ are a linear function of state, plus Gaussian noise: $ r_i = \theta^\top s_i + \epsilon_i$ where $ \epsilon_i \sim  \mathcal{N}(0, \epsilon I)$. The data only contains the *observed* rewards $ r_i(a_i)$, which is the reward vector indexed by the selected action.
-
-We will assume that the algorithm has access to the behavior $ \beta$ since issues of estimating $ \beta$ are orthogonal to our results. For our experiments we will sample $ \theta\in \R^{d\times 2}$ uniformly from $[0,1]^{d\times 2}$, we will set $ d=10$, $ \epsilon = 0.1$, and each dataset will have a training set of 100 datapoints and an independent test set of 500 datapoints. 
-
-We can think of this problem as being perhaps the easiest or most natural problem to try out. So any algorithms that struggle on this problem should immediately raise some red flags.
+A bandit dataset will consist of $ N $ datapoints of $ s_i, a_i, r_i(a_i)$ tuples representing the observed state, action, and reward at that state respectively and generated iid by the behavior $ \beta$ interacting with the environment. We use $ r_i $ to denote the full reward vector to make it easier to talk about counterfactual actions.
 
 ### Algorithms
 
@@ -44,26 +41,41 @@ $$
 *Value-based* learns a Q function by minimizing the mean squared error and then returns a greedy policy  $ \pi_{\widehat Q}$:
 
 $$
-\widehat Q = \arg\inf_{Q \in \mathcal{Q}} \sum_{i=1}^N (Q(s_i, a_i) - r_i(a_i))^2
+\pi_{\widehat Q} = \text{Greedy}(\widehat Q), \qquad \widehat Q = \arg\inf_{Q \in \mathcal{Q}} \sum_{i=1}^N (Q(s_i, a_i) - r_i(a_i))^2
 $$
 
 
 
-Both of these algorithms have nice guarantees when we use small model classes[^swam2] [^chen]. But, when we have really big neural nets as our policies and Q functions these guarantees are vacuous. Practically, in our running example we will use one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.
+Both of these algorithms have nice guarantees when we use small model classes[^swam2] [^chen]. But, when we have really big neural nets as our policies and Q functions these guarantees are vacuous. This is the setting we want to understand.
 
-### Results
+### Regret
 
-Now we can generate some results. The goal is to minimize the *regret* which is the difference between our learned policy and the optimal policy $ \pi^*$. Explicitly, we can define the regret of a policy $ \pi $ as
+We have the algorithms, but we need a notion of success to measure our policies by. For this we will use the *regret* which is the difference between our learned policy and the optimal policy $ \pi^*$. We want to minimize regret. Formally, we the regret of a policy $ \pi $ is
 
 
 $$
 \text{Regret}(\pi) = V(\pi^*) - V(\pi) = \mathbb{E}_{s}\mathbb{E}_{a \sim \pi^* \mid s} \mathbb{E}_{r\mid s}[r(a)] - \mathbb{E}_{s}\mathbb{E}_{a \sim \pi \mid s} \mathbb{E}_{r\mid s}[r(a)]
 $$
 
+---
 
-We run 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples, and plot the regret on a held out test set in the figure below. Error bars show the standard deviation over seeds. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.
+## A simple example
+
+For the rest of the post we will use the simple linear-Gaussian offline contextual bandit problem with $ d $-dimensional states and 2 actions defined below to present the main ideas of our paper.
+
+- States/contexts $ s_i \in \R^d $ are sampled iid from an isotropic, zero-mean Gaussian: $ s_i\sim \mathcal{N}(0, I)$
+- Actions $ a_i \in$ \{0,1\}​ are chosen uniformly at random by the behavior policy $ \beta$.
+- Full reward vectors $ r_i \in \R^2$ are a linear function of state, plus Gaussian noise: $ r_i = \theta^\top s_i + \epsilon_i$ where $ \epsilon_i \sim  \mathcal{N}(0, \epsilon I)$. The data only contains the *observed* rewards $ r_i(a_i)$, which is the reward vector indexed by the selected action.
+
+We will assume that the algorithm has access to the behavior $ \beta$ since issues of estimating $ \beta$ are orthogonal to our results.
+
+This is perhaps the easiest problem we could think of. Everything is linear and Gaussian and we have very good coverage of all states and actions. Any algorithms that struggle on this problem should immediately raise some red flags.
 
 <figure><img src="/assets/img/overparam_bandit/blog_bar.png" width="500"/></figure>
+
+For our experiments we sample $ \theta\in \R^{d\times 2}$ uniformly from $[0,1]^{d\times 2}$, set $ d=10$,  set $ \epsilon = 0.1$, and sample a training set of 100 datapoints with an independent test set of 500 datapoints. All of our models are one layer MLPs with width 512 which is more than enough to fit nearly linear functions in 10 dimensions on 100 datapoints.
+
+The figure above shows the result of running 50 seeds, each corresponding to an independent sample of $s_i, a_i, r_i $ tuples. We plot the regret on a held out test set with error bars showing the standard deviation over seeds. Better policies have lower regret and the optimal policy has zero regret. We include the regret of a random policy to get a sense of scale and find that policy-based algorithms perform much worse than value-based algorithms.
 
 ---
 
@@ -75,7 +87,7 @@ It's easiest to understand action-stability through a simple thought experiment.
 
 <figure><img src="/assets/img/overparam_bandit/toy_stability.png" width="700"/></figure>
 
-The figure shows the results from conducting this thought experiment on our running example problem. We measure the expected state-conditional TV distance between pairs of policies trained on datasets with re-sampled actions on a held out test set of states (i.e. $$\mathbb{E}_s[D_{TV}(\pi_1(\cdot\mid s)\mid\mid \pi_2(\cdot \mid s))] $$). We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is *overfitting* based on the *observed actions*. This is different from overfitting to the *labels* in supervised learning since unlike labels, we don't think that the observed action should change the underlying optimal policy.
+Our main figure reproduced above shows the results from conducting this thought experiment on our running example problem. We measure the expected state-conditional TV distance between pairs of policies trained on datasets with re-sampled actions on a held out test set of states (i.e. $$\mathbb{E}_s[D_{TV}(\pi_1(\cdot\mid s)\mid\mid \pi_2(\cdot \mid s))] $$). We find that over 20 re-samplings of the actions, the policy-based algorithm learns substantially different policies depending on the seed. In contrast, the value based algorithm always learns approximately the same policy. This behavior suggests that the policy-based algorithm is *overfitting* based on the *observed actions*. This is different from overfitting to the *labels* in supervised learning since unlike labels, we don't think that the observed action should change the underlying optimal policy.
 
 This idea of overfitting can also be seen in the learning curves. Below we show the learning curves on one seed. The objectives are the ones from above (estimated value for policy-based and MSE for value-based). "Train value" is the value of the policy estimated at the states in the training set. While the policy-based objective keeps increasing, the value of the policy keeps decreasing. This supports the idea that action-instability is causing overfitting.
 
