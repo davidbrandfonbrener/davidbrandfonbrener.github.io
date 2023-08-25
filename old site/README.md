@@ -1,2 +1,0 @@
-# davidbrandfonbrener.github.io
-website
