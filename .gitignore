@@ -1,7 +1,7 @@
 # Created by https://www.gitignore.io/api/osx,python,vim
 
 ### OSX ###
-.DS_Store
+*.DS_Store*
 .AppleDouble
 .LSOverride
 
